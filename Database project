@@ -1,0 +1,120 @@
+# import json and pandas
+import json
+import pandas as pd
+
+# open jaon file 
+with open("orders_ETL.json","r") as file:
+    reader = json.load(file)
+
+order_id = []
+order_date = []
+total_amount = []
+quantity = []
+cust_id = []
+customer_id = []
+customer_name = []
+email = []
+address = []
+product_id = []
+product_name = []
+category = []
+price = []
+
+for order in reader:
+    cust_id.append(order["customer"]["customer_id"])
+    customer_name.append(order["customer"]["name"])
+    email.append(order["customer"]["email"])
+    address.append(order["customer"]["address"])
+    
+    for product in order["products"]:  
+        order_id.append(order["order_id"])
+        order_date.append(order["order_date"])
+        total_amount.append(order["total_amount"])
+        quantity.append(product["quantity"])
+        customer_id.append(order["customer"]["customer_id"])
+        # customer_name.append(order["customer"]["name"])
+        # email.append(order["customer"]["email"])
+        # address.append(order["customer"]["address"])
+        product_id.append(product["product_id"])
+        product_name.append(product["name"])
+        category.append(product["category"])
+        price.append(product["price"])
+
+# orders dataframe
+df_orders = pd.DataFrame({
+    "order_id" : order_id,
+    "product_id" : product_id,
+    "customer_id" : customer_id,
+    "order_date" : order_date,
+    "total_amount" : total_amount,
+    "quantity" : quantity,  
+    })  
+
+# products dataframe
+df_products = pd.DataFrame({
+    "product_id" : product_id,
+    "product_name" : product_name,
+    "category" : category,
+    "price" : price  
+    })    
+
+# customers dataframe
+df_customers = pd.DataFrame({
+    "customer_id" : cust_id,
+    "customer_name" : customer_name,
+    "email" :  email,
+    "address" : address,    
+    })  
+
+# print(df_orders)
+# print(df_products)
+# print(df_customers)
+
+# print(df_orders[df_orders.duplicated()])
+# print(df_customers[df_customers.duplicated()])
+# print(df_products[df_products.duplicated()])    
+
+print(df_products.drop_duplicates(subset = ["product_id"], keep = "last", inplace = True))
+print(df_customers.drop_duplicates(subset = ["customer_id"], keep = "last", inplace = True))
+
+# connecting python to database(mysql) using driver sqlalchema
+import pandas as pd
+from sqlalchemy import create_engine, text
+user = "root"
+pw = "rohit"
+db = "ponraj"
+engine = create_engine(f"mysql+pymysql://{user}:{pw}@localhost/{db}")
+
+# storing dataframe under respetive table name
+df_orders.to_sql("orders", con = engine, if_exists = "replace", index = False)    
+df_products.to_sql("products",con = engine, if_exists = "replace", index = False)    
+df_customers.to_sql("customers", con = engine, if_exists = "replace", index = False)    
+
+# quering product table using sql query
+sql = "select * from products"
+result = pd.read_sql(sql,engine)
+print(result)
+
+# analysing requred information using sql join query 
+sql1 = """select 
+    o.order_id, 
+    o.order_date,
+    o.customer_id,
+    o.product_id, 
+    c.customer_name,
+    p.product_name,
+    sum(p.price) over(partition by customer_id order by customer_id rows between unbounded preceding and current row) as total,
+    count(order_id) over () as total_rows
+from orders o 
+join customers c on o.customer_id = c.customer_id
+join products p on o.product_id = p.product_id"""
+result = pd.read_sql(sql1,engine)
+print(result)
+
+# execute the sql auery using text keyword
+connection = engine.connect()
+sql = "select * from products"
+result = connection.execute(text(sql))
+for row in result:
+    print(row)
+connection.commit()
