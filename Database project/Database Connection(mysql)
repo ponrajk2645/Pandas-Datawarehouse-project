@@ -12,3 +12,8 @@ except SQLALchemyError as e:
     print(f" ERROR: {e}")
 except Exception as e:
     print(f" ERROR: {e}")
+
+# sending dataframes to database using the above connection
+df_orders.to_sql("orders", con = engine, if_exists = "replace", index = False)    
+df_products.to_sql("products",con = engine, if_exists = "replace", index = False)    
+df_customers.to_sql("customers", con = engine, if_exists = "replace", index = False)    
