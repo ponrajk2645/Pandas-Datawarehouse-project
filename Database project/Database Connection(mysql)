@@ -2,7 +2,7 @@
 
 import pandas as pd
 from sqlalchemy import create_engine, text
-from sqlalchemy import SQLALchemyError
+from sqlalchemy.exc import SQLALchemyError
 try:
     user = "root"
     pw = "rohit"
