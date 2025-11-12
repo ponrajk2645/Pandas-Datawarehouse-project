@@ -1,7 +1,10 @@
 # quering products table using sql query
-sql = "select * from products"
-result = pd.read_sql(sql,engine)
-print(result)
+sql = "select * from product"
+try:
+    result = pd.read_sql(sql,engine)
+    print(result)
+except Exception as e:
+    print(f"ERROR:{e}")
 
 # analyse required information using sql join query 
 sql1 = """select 
@@ -16,12 +19,21 @@ sql1 = """select
 from orders o 
 join customers c on o.customer_id = c.customer_id
 join products p on o.product_id = p.product_id"""
-result = pd.read_sql(sql1,engine)
-print(result)
+try:
+    result = pd.read_sql(sql1,engine)
+    print(result)
+except Exception as e:
+    print(f"ERROR:{e}")
 
 # execute sql query
-connection = engine.connect()
-sql = "select * from products"
-result = connection.execute(text(sql))
-for row in result:
-    print(row)
+try: 
+    connection = engine.connect()
+    sql = "select * from products"
+    result = connection.execute(text(sql))
+    for row in result:
+        print(row)
+except Eception as e:
+    print(F "ERROR:{E}") 
+
+finally:
+    connection.commit()
