@@ -30,10 +30,13 @@ try:
     connection = engine.connect()
     sql = "select * from products"
     result = connection.execute(text(sql))
-    for row in result:
+    results = result.fetchone()      # fetch single row
+    # results = result.fetchmany(3)  # fetch specified number of rows
+    # results = result.fetchall()    # fetch all rows
+    for row in results:
         print(row)
-except Eception as e:
-    print(F "ERROR:{E}") 
+except Exception as e:
+    print(f"ERROR:{e}")  
 
 finally:
     connection.commit()
