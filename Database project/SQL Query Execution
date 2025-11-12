@@ -29,7 +29,7 @@ except Exception as e:
 try: 
     connection = engine.connect()
     sql = "select * from products"
-    result = connection.execute(text(sql))
+    result = connection.execute(text(sql))   # text - constructor used to execute the raw sql query
     results = result.fetchone()      # fetch single row
     # results = result.fetchmany(3)  # fetch specified number of rows
     # results = result.fetchall()    # fetch all rows
