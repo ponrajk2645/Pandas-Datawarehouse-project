@@ -1,72 +1,14 @@
-import json
+# connecting python to database(mysql) using driver sqlalchemy
+
 import pandas as pd
-with open("orders_ETL.json","r") as file:
-    reader = json.load(file)
-
-order_id = []
-order_date = []
-total_amount = []
-quantity = []
-cust_id = []
-customer_id = []
-customer_name = []
-email = []
-address = []
-product_id = []
-product_name = []
-category = []
-price = []
-
-for order in reader:
-    cust_id.append(order["customer"]["customer_id"])
-    customer_name.append(order["customer"]["name"])
-    email.append(order["customer"]["email"])
-    address.append(order["customer"]["address"])
-    
-    for product in order["products"]:  
-        order_id.append(order["order_id"])
-        order_date.append(order["order_date"])
-        total_amount.append(order["total_amount"])
-        quantity.append(product["quantity"])
-        customer_id.append(order["customer"]["customer_id"])
-        # customer_name.append(order["customer"]["name"])
-        # email.append(order["customer"]["email"])
-        # address.append(order["customer"]["address"])
-        product_id.append(product["product_id"])
-        product_name.append(product["name"])
-        category.append(product["category"])
-        price.append(product["price"])
- 
-df_orders = pd.DataFrame({
-    "order_id" : order_id,
-    "product_id" : product_id,
-    "customer_id" : customer_id,
-    "order_date" : order_date,
-    "total_amount" : total_amount,
-    "quantity" : quantity,  
-    })  
-
-df_products = pd.DataFrame({
-    "product_id" : product_id,
-    "product_name" : product_name,
-    "category" : category,
-    "price" : price  
-    })    
-
-df_customers = pd.DataFrame({
-    "customer_id" : cust_id,
-    "customer_name" : customer_name,
-    "email" :  email,
-    "address" : address,    
-    })  
-
-# print(df_orders)
-# print(df_products)
-# print(df_customers)
-
-# print(df_orders[df_orders.duplicated()])
-# print(df_customers[df_customers.duplicated()])
-# print(df_products[df_products.duplicated()])    
-
-print(df_products.drop_duplicates(subset = ["product_id"], keep = "last", inplace = True))
-print(df_customers.drop_duplicates(subset = ["customer_id"], keep = "last", inplace = True))
+from sqlalchemy import create_engine, text
+from sqlalchemy import SQLALchemyError
+try:
+    user = "root"
+    pw = "rohit"
+    db = "ponraj"
+    engine = create_engine(f"mysql+pymysql://{user}:{pw}@localhost/{db}")
+except SQLALchemyError as e:
+    print(f" ERROR: {e}")
+except Exception as e:
+    print(f" ERROR: {e}")
