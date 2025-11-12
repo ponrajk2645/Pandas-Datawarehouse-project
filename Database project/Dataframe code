@@ -74,6 +74,7 @@ df_customers = pd.DataFrame({
 # print(df_customers[df_customers.duplicated()])
 # print(df_products[df_products.duplicated()])    
 
+# drop dulicated in dim_table(products and customers)
 print(df_products.drop_duplicates(subset = ["product_id"], keep = "last", inplace = True))
 print(df_customers.drop_duplicates(subset = ["customer_id"], keep = "last", inplace = True))
 
